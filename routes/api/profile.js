@@ -7,6 +7,7 @@ const { check, validationResult } = require('express-validator');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Post');
 
 // @route   GET api/profile/me
 // @desc    Get current users profile
@@ -147,8 +148,8 @@ router.get('/user/:user_id', async (req, res) => {
 // @access  Private
 router.delete('/', auth, async (req, res) => {
   try {
-    // @ todo - remove  users posts
-
+    // Remove user posts
+    await Post.deleteMany({ user: req.user.id });
     // Remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
     // Remove user
@@ -246,7 +247,7 @@ router.put(
     auth,
     [
       check('school', 'School is required').not().isEmpty(),
-      check('degree', 'degree is required').not().isEmpty(),
+      check('degree', 'Degree is required').not().isEmpty(),
       check('fieldofstudy', 'Field  of study is required').not().isEmpty(),
       check('from', 'From date is required').not().isEmpty()
     ]
@@ -298,16 +299,11 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
 
-    // Get remove index
-    const removeIndex = profile.experience
-      .map((item) => item.id)
-      .indexOf(req.params.edu_id);
-
-    profile.education.splice(removeIndex, 1);
-
+    profile.education = profile.education.filter(
+      (edu) => edu._id.toString() !== req.params.edu_id
+    );
     await profile.save();
-
-    res.json(profile);
+    return res.status(200).json(profile);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
