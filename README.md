@@ -38,4 +38,6 @@ npm run build
 
 ## Project Info
 
+### Course
+[MERN Stack Front To Back](https://www.udemy.com/mern-stack-front-to-back/?couponCode=TRAVERSYMEDIA)
 
