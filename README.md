@@ -1,5 +1,6 @@
 # dev-connect 👩‍💻
-> social network for developers
+
+A social network for developers.
 
 This application with build on the MERN stack
 - MongoDB
